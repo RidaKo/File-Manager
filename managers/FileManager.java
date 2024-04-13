@@ -1,5 +1,7 @@
 package managers;
 
+import exceptions.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,12 +17,12 @@ public class FileManager extends AbstractFileManager{
     // private ArrayList<File> directories;
     // private ArrayList<File> files;
 
-    public FileManager() {
+    public FileManager() throws DirectoryNotFoundException {
         super();
     }
 
-    public FileManager(String directory) {
-        super(directory); 
+    public FileManager(String directory) throws DirectoryNotFoundException {
+        super(directory);
     }
 
     // public FileManager() {
@@ -71,7 +73,7 @@ public class FileManager extends AbstractFileManager{
     // }
 
 
-    public File createDirectory(String fileName) {
+    public File createDirectory(String fileName)  {
         File file = new File(baseDirectory, fileName);
         if (!file.exists()) {
             boolean created = file.mkdirs();
@@ -105,7 +107,7 @@ public class FileManager extends AbstractFileManager{
     //     return file;
     // }
 
-    public File createFile(String fileName) {
+    public File createFile(String fileName) throws IOException {
         File file = new File(baseDirectory, fileName);
         try {
             if(file.createNewFile()) {

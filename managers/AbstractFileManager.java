@@ -1,10 +1,12 @@
 package managers;
 
+import exceptions.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public abstract class AbstractFileManager implements AdvancedFileManager{
+public abstract class AbstractFileManager implements AdvancedFileManager {
     protected static int objectCount = 0;
     protected final int id;
     protected String baseDirectory;
@@ -13,9 +15,9 @@ public abstract class AbstractFileManager implements AdvancedFileManager{
     protected ArrayList<File> directories;
     protected ArrayList<File> files;
 
-    protected AbstractFileManager() {
+    protected AbstractFileManager() throws DirectoryNotFoundException {
         this.id = AbstractFileManager.objectCount++;
-        this.baseDirectory = "C:"; 
+        this.baseDirectory = "C:";
         this.directories = new ArrayList<>();
         this.files = new ArrayList<>();
         this.directoryCount = 0;
@@ -23,7 +25,7 @@ public abstract class AbstractFileManager implements AdvancedFileManager{
         initializeDirectory(baseDirectory);
     }
 
-    protected AbstractFileManager(String directory) {
+    protected AbstractFileManager(String directory) throws DirectoryNotFoundException {
         this.id = AbstractFileManager.objectCount++;
         this.baseDirectory = directory;
         this.directories = new ArrayList<>();
@@ -33,9 +35,14 @@ public abstract class AbstractFileManager implements AdvancedFileManager{
         initializeDirectory(directory);
     }
 
-    private void initializeDirectory(String directory) {
+    private void initializeDirectory(String directory) throws DirectoryNotFoundException {
         File baseDir = new File(directory);
+        if (!baseDir.exists() || !baseDir.isDirectory()) {
+            throw new DirectoryNotFoundException("Directory not found or is not a directory: " + directory);
+        }
+
         File[] files = baseDir.listFiles();
+
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
@@ -49,8 +56,6 @@ public abstract class AbstractFileManager implements AdvancedFileManager{
         }
     }
 
-
-
     public void listFiles() {
         File baseDir = new File(baseDirectory);
         String[] files = baseDir.list();
@@ -63,7 +68,6 @@ public abstract class AbstractFileManager implements AdvancedFileManager{
             System.out.println("No files in directory " + baseDirectory);
         }
     }
-
 
     public static int getObjectCount() {
         return objectCount;
