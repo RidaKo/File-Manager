@@ -6,8 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.lang.CloneNotSupportedException;
 
-public class FileManager extends AbstractFileManager{
+public class FileManager extends AbstractFileManager implements Cloneable{
 
     // private static int objectCount = 0;
     // private final int id;
@@ -25,52 +26,30 @@ public class FileManager extends AbstractFileManager{
         super(directory);
     }
 
-    // public FileManager() {
-    //     this.id = FileManager.objectCount;
-    //     FileManager.objectCount++;
-    //     this.baseDirectory = "C:";
-    //     File baseDir = new File(this.baseDirectory);
+    public FileManager clone() throws CloneNotSupportedException
+    {
+        //try {
 
-    //     this.directories = new ArrayList<>();
-    //     this.files = new ArrayList<>();
-    //     this.directoryCount = 0;
-    //     this.fileCount = 0;
+            FileManager fm  = (FileManager)super.clone();
+            //fm.setBaseDirectory(this.baseDirectory);
+            //fm.setDirectories(cloneFiles(this.directories));
+            fm.setFiles(cloneFiles(this.files));
+            return fm;
+        //} 
+        // catch (DirectoryNotFoundException e) {
+        //     e.printStackTrace();
+        //     throw new CloneNotSupportedException("Directorija nerasta, klonavimas nesekmingas.");
+        // }
+    }
 
-    //     File files[] = baseDir.listFiles();
-    //     for (File file : files) {
-    //         if (file.isDirectory()) {
-    //             directoryCount++;
-    //             this.directories.add(file);
-    //         } else {
-    //             this.fileCount++;
-    //             this.files.add(file);
-    //         }
-    //     }
-
-    // }
-
-    // public FileManager(String directory) {
-    //     this.id = FileManager.objectCount;
-    //     FileManager.objectCount++;
-    //     this.baseDirectory = directory;
-    //     File baseDir = new File(directory);
-    //     this.directories = new ArrayList<>();
-    //     this.files = new ArrayList<>();
-    //     this.directoryCount = 0;
-    //     this.fileCount = 0;
-
-    //     File files [] = baseDir.listFiles();
-    //     for (File file : files) {
-    //         if (file.isDirectory()) {
-    //             this.directoryCount++;
-    //             this.directories.add(file);
-    //         } else {
-    //             this.fileCount++;
-    //             this.files.add(file);
-    //         }
-    //     }
-
-    // }
+    private ArrayList<File> cloneFiles(ArrayList<File> original) {
+        ArrayList<File> clonedList = new ArrayList<>(original.size());
+        for (File file : original) {
+            File clonedFile = new File(file.getPath());
+            clonedList.add(clonedFile);
+        }
+        return clonedList;
+    }
 
 
     public File createDirectory(String fileName)  {
@@ -90,22 +69,7 @@ public class FileManager extends AbstractFileManager{
         return file;
     }
 
-    // public File createFile(String fileName) {
-    //     File file = new File(baseDirectory, fileName);
-    //     if (!file.exists()) {
-    //         boolean created = file.createNewFile();
-    //         if (created) {
-    //             System.out.println("Sukurta: " + fileName);
-    //             this.files.add(file);
-    //             this.fileCount++;
-    //         } else {
-    //             System.out.println("Nepavyko sukurti: " + fileName);
-    //         }
-    //     } else {
-    //         System.out.println("Failas jau egzistuoja: " + fileName);
-    //     }
-    //     return file;
-    // }
+   
 
     public File createFile(String fileName) throws IOException {
         File file = new File(baseDirectory, fileName);
@@ -166,6 +130,73 @@ public class FileManager extends AbstractFileManager{
         return "FileManager: [id=" + this.getId() + ", baseDirectory=" + this.getBaseDirectory() + ", directoryCount="
                 + this.getDirectoryCount() + ", fileCount=" + this.getFileCount() + "]";
     }
+
+
+    
+    // public FileManager() {
+    //     this.id = FileManager.objectCount;
+    //     FileManager.objectCount++;
+    //     this.baseDirectory = "C:";
+    //     File baseDir = new File(this.baseDirectory);
+
+    //     this.directories = new ArrayList<>();
+    //     this.files = new ArrayList<>();
+    //     this.directoryCount = 0;
+    //     this.fileCount = 0;
+
+    //     File files[] = baseDir.listFiles();
+    //     for (File file : files) {
+    //         if (file.isDirectory()) {
+    //             directoryCount++;
+    //             this.directories.add(file);
+    //         } else {
+    //             this.fileCount++;
+    //             this.files.add(file);
+    //         }
+    //     }
+
+    // }
+
+    // public FileManager(String directory) {
+    //     this.id = FileManager.objectCount;
+    //     FileManager.objectCount++;
+    //     this.baseDirectory = directory;
+    //     File baseDir = new File(directory);
+    //     this.directories = new ArrayList<>();
+    //     this.files = new ArrayList<>();
+    //     this.directoryCount = 0;
+    //     this.fileCount = 0;
+
+    //     File files [] = baseDir.listFiles();
+    //     for (File file : files) {
+    //         if (file.isDirectory()) {
+    //             this.directoryCount++;
+    //             this.directories.add(file);
+    //         } else {
+    //             this.fileCount++;
+    //             this.files.add(file);
+    //         }
+    //     }
+
+    // }
+
+
+     // public File createFile(String fileName) {
+    //     File file = new File(baseDirectory, fileName);
+    //     if (!file.exists()) {
+    //         boolean created = file.createNewFile();
+    //         if (created) {
+    //             System.out.println("Sukurta: " + fileName);
+    //             this.files.add(file);
+    //             this.fileCount++;
+    //         } else {
+    //             System.out.println("Nepavyko sukurti: " + fileName);
+    //         }
+    //     } else {
+    //         System.out.println("Failas jau egzistuoja: " + fileName);
+    //     }
+    //     return file;
+    // }
 
     // public static int getObjectCount() {
     //     return objectCount;

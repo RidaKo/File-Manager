@@ -35,10 +35,18 @@ public abstract class AbstractFileManager implements AdvancedFileManager {
         initializeDirectory(directory);
     }
 
+    
+
+    
+
     private void initializeDirectory(String directory) throws DirectoryNotFoundException {
+        this.directories = new ArrayList<>();
+        this.files = new ArrayList<>();
+        this.directoryCount = 0;
+        this.fileCount = 0;
         File baseDir = new File(directory);
         if (!baseDir.exists() || !baseDir.isDirectory()) {
-            throw new DirectoryNotFoundException("Directory not found or is not a directory: " + directory);
+            throw new DirectoryNotFoundException("Directory not found or is not a directory: ", directory);
         }
 
         File[] files = baseDir.listFiles();
@@ -81,8 +89,11 @@ public abstract class AbstractFileManager implements AdvancedFileManager {
         return baseDirectory;
     }
 
-    public void setBaseDirectory(String baseDirectory) {
+    public void setBaseDirectory(String baseDirectory) throws DirectoryNotFoundException {
         this.baseDirectory = baseDirectory;
+
+        initializeDirectory(baseDirectory);
+        
     }
 
     public int getDirectoryCount() {
@@ -119,6 +130,13 @@ public abstract class AbstractFileManager implements AdvancedFileManager {
 
     public void addFile(ArrayList<File> files, File file) {
         this.files.add(file);
+    }
+
+    /// Metodas skirtas tik testavimui 
+    public void removeFileByIndex(int index)
+    {
+        this.files.remove(index);
+        this.fileCount--;
     }
 
 }
