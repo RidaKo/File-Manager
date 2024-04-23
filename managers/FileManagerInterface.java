@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.lang.CloneNotSupportedException;
 import exceptions.DirectoryNotFoundException;
 
-public interface AdvancedFileManager extends BasicFileManager{
+public interface FileManagerInterface{
     File createDirectory(String fileName);
+    void listFiles();
+    File createFile(String fileName) throws IOException;
+    void deleteFile(String fileName);
 
     String getBaseDirectory();
     void setBaseDirectory(String baseDirectory) throws DirectoryNotFoundException;

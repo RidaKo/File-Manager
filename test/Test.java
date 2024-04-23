@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.IOException;
 
 import factories.FileManagerFactory;
-import managers.AdvancedFileManager;
 import managers.FileManager;
+import managers.FileManagerInterface;
 import managers.ImageFileManager;
 import managers.TextFileManager;
 import exceptions.*;
@@ -50,11 +50,12 @@ public class Test {
 
 
 
-        
-        //// Preitas kodas
-        AdvancedFileManager advancedFileManager = null;
+
+        //// Preitas kodas 
+        System.out.println("---    Seni testai ----");
+        FileManagerInterface fileManagerInterface = null;
         try {
-            advancedFileManager = fManagerFact.createManagerWithArgument("FileManager", dir);///new FileManager(dir);
+            fileManagerInterface = fManagerFact.createManagerWithArgument("FileManager", dir);///new FileManager(dir);
         } catch (DirectoryNotFoundException e) {
             System.err.println("AdvancedFileManager inicializcija nesuveike: " + e.getMessage());
         }

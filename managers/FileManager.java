@@ -5,25 +5,36 @@ import exceptions.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.lang.CloneNotSupportedException;
 
-public class FileManager extends AbstractFileManager implements Cloneable{
+public class FileManager implements Cloneable, FileManagerInterface{
 
-    // private static int objectCount = 0;
-    // private final int id;
-    // private String baseDirectory;
-    // private int directoryCount;
-    // private int fileCount;
-    // private ArrayList<File> directories;
-    // private ArrayList<File> files;
+    protected static int objectCount = 0;
+    protected final int id;
+    protected String baseDirectory;
+    protected int directoryCount;
+    protected int fileCount;
+    protected ArrayList<File> directories;
+    protected ArrayList<File> files;
 
     public FileManager() throws DirectoryNotFoundException {
-        super();
+        this.id = FileManager.objectCount++;
+        this.baseDirectory = "C:";
+        this.directories = new ArrayList<>();
+        this.files = new ArrayList<>();
+        this.directoryCount = 0;
+        this.fileCount = 0;
+        initializeDirectory(baseDirectory);
     }
 
     public FileManager(String directory) throws DirectoryNotFoundException {
-        super(directory);
+        this.id = FileManager.objectCount++;
+        this.baseDirectory = directory;
+        this.directories = new ArrayList<>();
+        this.files = new ArrayList<>();
+        this.directoryCount = 0;
+        this.fileCount = 0;
+        initializeDirectory(directory);
     }
 
     public FileManager clone() throws CloneNotSupportedException
@@ -126,9 +137,97 @@ public class FileManager extends AbstractFileManager implements Cloneable{
         }
     }
 
+    private void initializeDirectory(String directory) throws DirectoryNotFoundException {
+        this.directories = new ArrayList<>();
+        this.files = new ArrayList<>();
+        this.directoryCount = 0;
+        this.fileCount = 0;
+        File baseDir = new File(directory);
+        if (!baseDir.exists() || !baseDir.isDirectory()) {
+            throw new DirectoryNotFoundException("Directory not found or is not a directory: ", directory);
+        }
+
+        File[] files = baseDir.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    directoryCount++;
+                    directories.add(file);
+                } else {
+                    fileCount++;
+                    this.files.add(file);
+                }
+            }
+        }
+    }
+
     public String toString() {
         return "FileManager: [id=" + this.getId() + ", baseDirectory=" + this.getBaseDirectory() + ", directoryCount="
                 + this.getDirectoryCount() + ", fileCount=" + this.getFileCount() + "]";
+    }
+
+
+    public static int getObjectCount() {
+        return objectCount;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getBaseDirectory() {
+        return baseDirectory;
+    }
+
+    public void setBaseDirectory(String baseDirectory) throws DirectoryNotFoundException {
+        this.baseDirectory = baseDirectory;
+
+        initializeDirectory(baseDirectory);
+        
+    }
+
+    public int getDirectoryCount() {
+        return directoryCount;
+    }
+
+    public void setDirectoryCount(int directoryCount) {
+        this.directoryCount = directoryCount;
+    }
+
+    public int getFileCount() {
+        return fileCount;
+    }
+
+    public void setFileCount(int fileCount) {
+        this.fileCount = fileCount;
+    }
+
+    public ArrayList<File> getDirectories() {
+        return directories;
+    }
+
+    public void setDirectories(ArrayList<File> directories) {
+        this.directories = directories;
+    }
+
+    public ArrayList<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(ArrayList<File> files) {
+        this.files = files;
+    }
+
+    public void addFile(ArrayList<File> files, File file) {
+        this.files.add(file);
+    }
+
+    /// Metodas skirtas tik testavimui 
+    public void removeFileByIndex(int index)
+    {
+        this.files.remove(index);
+        this.fileCount--;
     }
 
 
