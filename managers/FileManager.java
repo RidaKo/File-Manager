@@ -3,11 +3,19 @@ package managers;
 import exceptions.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.lang.CloneNotSupportedException;
+import java.io.Serializable;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 
-public class FileManager implements Cloneable, FileManagerInterface{
+
+public class FileManager implements Cloneable, Serializable, Runnable,  FileManagerInterface{
 
     protected static int objectCount = 0;
     protected final int id;
@@ -16,6 +24,7 @@ public class FileManager implements Cloneable, FileManagerInterface{
     protected int fileCount;
     protected ArrayList<File> directories;
     protected ArrayList<File> files;
+    public String saveFile;
 
     public FileManager() throws DirectoryNotFoundException {
         this.id = FileManager.objectCount++;
@@ -24,7 +33,7 @@ public class FileManager implements Cloneable, FileManagerInterface{
         this.files = new ArrayList<>();
         this.directoryCount = 0;
         this.fileCount = 0;
-        initializeDirectory(baseDirectory);
+        initializeDirectory(this.baseDirectory);
     }
 
     public FileManager(String directory) throws DirectoryNotFoundException {
@@ -37,20 +46,20 @@ public class FileManager implements Cloneable, FileManagerInterface{
         initializeDirectory(directory);
     }
 
+
     public FileManager clone() throws CloneNotSupportedException
     {
-        //try {
-
+        try {
             FileManager fm  = (FileManager)super.clone();
-            //fm.setBaseDirectory(this.baseDirectory);
-            //fm.setDirectories(cloneFiles(this.directories));
+            fm.setBaseDirectory(this.baseDirectory);
+            fm.setDirectories(cloneFiles(this.directories));
             fm.setFiles(cloneFiles(this.files));
             return fm;
-        //} 
-        // catch (DirectoryNotFoundException e) {
-        //     e.printStackTrace();
-        //     throw new CloneNotSupportedException("Directorija nerasta, klonavimas nesekmingas.");
-        // }
+        } 
+        catch (DirectoryNotFoundException e) {
+            e.printStackTrace();
+            throw new CloneNotSupportedException("Directorija nerasta, klonavimas nesekmingas.");
+        }
     }
 
     private ArrayList<File> cloneFiles(ArrayList<File> original) {
@@ -60,6 +69,44 @@ public class FileManager implements Cloneable, FileManagerInterface{
             clonedList.add(clonedFile);
         }
         return clonedList;
+    }
+
+
+    // public void serializeObject(ExampleObject obj, String filename) {
+    //     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+    //         oos.writeObject(obj);
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
+    @Override
+    public void run() {
+        try {
+            //serializeToFile(this, this.fileName);
+            String filename = this.saveFile;
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
+                out.writeObject(this);
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to save state: " + e.getMessage());
+        }
+    }
+
+    private static Object deserializeFromFile(String filename) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
+            return in.readObject();
+        }
+    }
+
+    public FileManager loadState(FileManager fileManager, String fileName)
+    {
+        try {
+            fileManager =  (FileManager)deserializeFromFile(fileName);
+        } catch (Exception e) {
+            System.out.println("Failed to load: " + e.getMessage());
+        }
+        return fileManager;
     }
 
 
@@ -125,15 +172,15 @@ public class FileManager implements Cloneable, FileManagerInterface{
     }
 
     final public void listFiles() {
-        File baseDir = new File(baseDirectory);
+        File baseDir = new File(this.baseDirectory);
         String files[] = baseDir.list();
         if (files != null && files.length > 0) {
-            System.out.println("Failai direktorijoje " + baseDirectory + ":");
+            System.out.println("Failai direktorijoje " + this.baseDirectory + ":");
             for (String file : files) {
                 System.out.println(file);
             }
         } else {
-            System.out.println("Nera failu direktorijoje " + baseDirectory);
+            System.out.println("Nera failu direktorijoje " + this.baseDirectory);
         }
     }
 
@@ -144,7 +191,7 @@ public class FileManager implements Cloneable, FileManagerInterface{
         this.fileCount = 0;
         File baseDir = new File(directory);
         if (!baseDir.exists() || !baseDir.isDirectory()) {
-            throw new DirectoryNotFoundException("Directory not found or is not a directory: ", directory);
+            throw new DirectoryNotFoundException("Direktorija nerasta arba tai ne direktorija: ", directory);
         }
 
         File[] files = baseDir.listFiles();
@@ -161,6 +208,26 @@ public class FileManager implements Cloneable, FileManagerInterface{
             }
         }
     }
+
+
+    // public void saveObject(Object obj, String filename) {
+    //     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+    //         oos.writeObject(obj);
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
+    // public Object loadObject(String filename) {
+    //     Object obj = null;
+    //     try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+    //         obj = ois.readObject();
+    //     } catch (IOException | ClassNotFoundException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return obj;
+    // }
+
 
     public String toString() {
         return "FileManager: [id=" + this.getId() + ", baseDirectory=" + this.getBaseDirectory() + ", directoryCount="
@@ -229,124 +296,5 @@ public class FileManager implements Cloneable, FileManagerInterface{
         this.files.remove(index);
         this.fileCount--;
     }
-
-
-    
-    // public FileManager() {
-    //     this.id = FileManager.objectCount;
-    //     FileManager.objectCount++;
-    //     this.baseDirectory = "C:";
-    //     File baseDir = new File(this.baseDirectory);
-
-    //     this.directories = new ArrayList<>();
-    //     this.files = new ArrayList<>();
-    //     this.directoryCount = 0;
-    //     this.fileCount = 0;
-
-    //     File files[] = baseDir.listFiles();
-    //     for (File file : files) {
-    //         if (file.isDirectory()) {
-    //             directoryCount++;
-    //             this.directories.add(file);
-    //         } else {
-    //             this.fileCount++;
-    //             this.files.add(file);
-    //         }
-    //     }
-
-    // }
-
-    // public FileManager(String directory) {
-    //     this.id = FileManager.objectCount;
-    //     FileManager.objectCount++;
-    //     this.baseDirectory = directory;
-    //     File baseDir = new File(directory);
-    //     this.directories = new ArrayList<>();
-    //     this.files = new ArrayList<>();
-    //     this.directoryCount = 0;
-    //     this.fileCount = 0;
-
-    //     File files [] = baseDir.listFiles();
-    //     for (File file : files) {
-    //         if (file.isDirectory()) {
-    //             this.directoryCount++;
-    //             this.directories.add(file);
-    //         } else {
-    //             this.fileCount++;
-    //             this.files.add(file);
-    //         }
-    //     }
-
-    // }
-
-
-     // public File createFile(String fileName) {
-    //     File file = new File(baseDirectory, fileName);
-    //     if (!file.exists()) {
-    //         boolean created = file.createNewFile();
-    //         if (created) {
-    //             System.out.println("Sukurta: " + fileName);
-    //             this.files.add(file);
-    //             this.fileCount++;
-    //         } else {
-    //             System.out.println("Nepavyko sukurti: " + fileName);
-    //         }
-    //     } else {
-    //         System.out.println("Failas jau egzistuoja: " + fileName);
-    //     }
-    //     return file;
-    // }
-
-    // public static int getObjectCount() {
-    //     return objectCount;
-    // }
-
-    // public int getId() {
-    //     return id;
-    // }
-
-    // public String getBaseDirectory() {
-    //     return baseDirectory;
-    // }
-
-    // public void setBaseDirectory(String baseDirectory) {
-    //     this.baseDirectory = baseDirectory;
-    // }
-
-    // public int getDirectoryCount() {
-    //     return directoryCount;
-    // }
-
-    // public void setDirectoryCount(int directoryCount) {
-    //     this.directoryCount = directoryCount;
-    // }
-
-    // public int getFileCount() {
-    //     return fileCount;
-    // }
-
-    // public void setFileCount(int fileCount) {
-    //     this.fileCount = fileCount;
-    // }
-
-    // public ArrayList<File> getDirectories() {
-    //     return directories;
-    // }
-
-    // public void setDirectories(ArrayList<File> directories) {
-    //     this.directories = directories;
-    // }
-
-    // public ArrayList<File> getFiles() {
-    //     return files;
-    // }
-
-    // public void setFiles(ArrayList<File> files) {
-    //     this.files = files;
-    // }
-
-    // public void addFile(ArrayList<File> files, File file) {
-    //     this.files.add(file);
-    // }
 
 }

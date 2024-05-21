@@ -15,7 +15,7 @@ public class Test {
 
     public static void main(String args[]) {
 
-        String dir = "C:\\Users\\kroda\\OneDrive\\Java\\porj"; //"C:\\Users\\HP\\OneDrive\\Java\\porj"; 
+        String dir =  "C:\\Users\\HP\\OneDrive\\Java\\porj"; //"C:\\Users\\kroda\\OneDrive\\Java\\porj";
         System.out.println("Testuojamas failu tvarkykles modulis:");
         FileManagerFactory fManagerFact = new FileManagerFactory();
         

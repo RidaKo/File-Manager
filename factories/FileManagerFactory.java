@@ -30,7 +30,7 @@ public class FileManagerFactory {
         
     }
 
-    public FileManager createManagerWithArgument(String type, String arg) throws DirectoryNotFoundException{
+    public FileManager createManager(String type, String directory) throws DirectoryNotFoundException{
             // if (type.equalsIgnoreCase("FileManager")) {
             //     return new FileManager(arg);
             // } else if (type.equalsIgnoreCase("ImageFileManager")) {
@@ -44,11 +44,11 @@ public class FileManagerFactory {
 
             switch (type.toLowerCase()) {
                 case "filemanager":
-                    return new FileManager(arg);
+                    return new FileManager(directory);
                 case "imagefilemanager":
-                    return new ImageFileManager(arg);
+                    return new ImageFileManager(directory);
                 case "textfilemanager":
-                    return new TextFileManager(arg);
+                    return new TextFileManager(directory);
                 default:
                     throw new IllegalArgumentException("Neteisingas tipas: " + type);
             }
